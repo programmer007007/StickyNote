@@ -254,8 +254,32 @@ namespace StickyNote
 
         private void btnPaypalDonate_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo sInfo = new ProcessStartInfo("http://google.com");
+            ProcessStartInfo sInfo = new ProcessStartInfo("https://www.paypal.me/Prince898/20");
             Process.Start(sInfo);
+        }
+
+        private void frmStickyNote_Leave(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void frmStickyNote_Deactivate(object sender, EventArgs e)
+        {
+            string newFileName = DateTime.Today.ToShortDateString().ToString().Replace(@":", "_").Replace(" ", "_").Replace(@"/", "_");
+            if (!Directory.Exists(Helper.dirPath))
+            {
+                DirectoryInfo di = Directory.CreateDirectory(Helper.dirPath);
+                Console.WriteLine("The directory was created successfully at {0}.",
+                    Directory.GetCreationTime(Helper.dirPath));
+            }
+            string fileName = Helper.dirPath + "Note_" + RandomNumber(1, 1000) + "__" + newFileName + ".txt";
+
+            // Create a file to write to.
+            using (StreamWriter sw = File.CreateText(fileName))
+            {
+                sw.WriteLine(txtMessage.Text);
+
+            }
         }
 
     }
