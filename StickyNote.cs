@@ -18,6 +18,7 @@ namespace StickyNote
     {
         public ArrayList psHolder = new ArrayList();
         public static int cpostion = 0;
+
         public frmStickyNote()
         {
             InitializeComponent();
@@ -26,11 +27,12 @@ namespace StickyNote
         public void readAFileIntoTextBox(FileInfo myFile)
         {
             if (myFile == null)
-            { // Getting into the default directory and reading the last created file
+            {
+                // Getting into the default directory and reading the last created file
 
                 myFile = Helper.getLastCreatedFile();
-
             }
+
             if (myFile != null && File.Exists(myFile.FullName))
             {
                 txtMessage.Text = "";
@@ -44,10 +46,11 @@ namespace StickyNote
                 }
             }
         }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             //if (Debugger.IsAttached)
-                //Settings.Default.Reset();
+            //Settings.Default.Reset();
             if (!String.IsNullOrEmpty(Properties.Settings.Default.clientId) &&
                 !String.IsNullOrEmpty(Properties.Settings.Default.clientSecret))
             {
@@ -55,20 +58,20 @@ namespace StickyNote
                     Properties.Settings.Default.clientSecret);
             }
 
-            
+
             Helper.dirPath = Properties.Settings.Default.default_folder;
             Helper.parentFolder = Properties.Settings.Default.parent_folder;
             if (!String.IsNullOrEmpty(Helper.dirPath))
             {
                 readAFileIntoTextBox(null);
             }
-
         }
 
         private void txtSearch_Click(object sender, EventArgs e)
         {
             this.txtSearch.Text = "";
         }
+
         // Generate a random number between two numbers  
         public int RandomNumber(int min, int max)
         {
@@ -91,15 +94,11 @@ namespace StickyNote
                     //break;
                     cnt++;
                     psHolder.Add(position + 100);
-
                 }
-
-
             }
 
             if (psHolder.Count > 0)
             {
-
                 txtMessage.SelectionStart = int.Parse(psHolder[0].ToString());
                 txtMessage.ScrollToCaret();
             }
@@ -108,41 +107,39 @@ namespace StickyNote
                 toolStripStatusLabel.Text = "Not Found.";
             }
         }
+
         private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
         {
-
-
             if (txtSearch.Text.Length == 0)
             {
                 txtMessage.SelectionStart = 0;
                 txtMessage.ScrollToCaret();
             }
-            if (e.KeyChar.Equals((char)13))
+
+            if (e.KeyChar.Equals((char) 13))
             {
                 searchText();
                 e.Handled = true; // suppress default handling
             }
-
         }
-
 
 
         private void toolStripStatusLabel1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            string newFileName = DateTime.Today.ToShortDateString().ToString().Replace(@":", "_").Replace(" ", "_").Replace(@"/", "_");
-            DialogResult dialogResult = MessageBox.Show("Want to give new name ?", "Attention", MessageBoxButtons.YesNo);
+            string newFileName = DateTime.Today.ToShortDateString().ToString().Replace(@":", "_").Replace(" ", "_")
+                .Replace(@"/", "_");
+            DialogResult dialogResult =
+                MessageBox.Show("Want to give new name ?", "Attention", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 //do something
                 newFileName = Prompt.ShowDialog("Enter a filename ", "Attention");
             }
-           
-            
+
 
             if (!Directory.Exists(Helper.dirPath))
             {
@@ -150,20 +147,22 @@ namespace StickyNote
                 Console.WriteLine("The directory was created successfully at {0}.",
                     Directory.GetCreationTime(Helper.dirPath));
             }
+
             string fileName = Helper.dirPath + "Note_" + RandomNumber(1, 1000) + "__" + newFileName + ".txt";
 
             // Create a file to write to.
             using (StreamWriter sw = File.CreateText(fileName))
             {
                 sw.WriteLine(txtMessage.Text);
-
             }
 
             if (Helper.driveService != null)
             {
                 try
-                { DialogResult dialogResultNew = MessageBox.Show("Want to upload the file to drive now ?","Attention",  MessageBoxButtons.YesNo);
-                if (dialogResultNew == DialogResult.Yes)
+                {
+                    DialogResult dialogResultNew = MessageBox.Show("Want to upload the file to drive now ?",
+                        "Attention", MessageBoxButtons.YesNo);
+                    if (dialogResultNew == DialogResult.Yes)
                     {
                         Helper.uploadFile(Helper.driveService, Helper.getLastCreatedFile().FullName,
                             Properties.Settings.Default.parent_folder);
@@ -173,9 +172,8 @@ namespace StickyNote
                 catch (Exception ex)
                 {
                     MessageBox.Show("File saved. Synced Failed");
-                    Console.WriteLine("Error "+ex.StackTrace);
+                    Console.WriteLine("Error " + ex.StackTrace);
                 }
-                   
             }
             else
             {
@@ -260,27 +258,29 @@ namespace StickyNote
 
         private void frmStickyNote_Leave(object sender, EventArgs e)
         {
-            
         }
 
         private void frmStickyNote_Deactivate(object sender, EventArgs e)
         {
-            string newFileName = DateTime.Today.ToShortDateString().ToString().Replace(@":", "_").Replace(" ", "_").Replace(@"/", "_");
+            string newFileName = DateTime.Today.ToShortDateString().ToString().Replace(@":", "_").Replace(" ", "_")
+                .Replace(@"/", "_");
             if (!Directory.Exists(Helper.dirPath))
             {
                 DirectoryInfo di = Directory.CreateDirectory(Helper.dirPath);
                 Console.WriteLine("The directory was created successfully at {0}.",
                     Directory.GetCreationTime(Helper.dirPath));
             }
+
             string fileName = Helper.dirPath + "Note_" + RandomNumber(1, 1000) + "__" + newFileName + ".txt";
 
-            // Create a file to write to.
-            using (StreamWriter sw = File.CreateText(fileName))
+            if (txtMessage.Text.Trim() != "")
             {
-                sw.WriteLine(txtMessage.Text);
-
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(fileName))
+                {
+                    sw.WriteLine(txtMessage.Text);
+                }
             }
         }
-
     }
 }
